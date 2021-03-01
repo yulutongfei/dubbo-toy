@@ -2,6 +2,7 @@ package com.sunxu.consumer;
 
 
 import com.sunxu.framework.Invocation;
+import com.sunxu.framework.ProxyFactory;
 import com.sunxu.framework.protocol.http.HttpClient;
 import com.sunxu.provider.api.HelloService;
 
@@ -12,12 +13,10 @@ import com.sunxu.provider.api.HelloService;
  */
 public class Consumer {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 
-        Invocation invocation = new Invocation(HelloService.class.getName(), "sayHello",
-                new Class[]{String.class}, new Object[]{"孙许"});
-        HttpClient httpClient = new HttpClient();
-        String result = httpClient.send("localhost", 8080, invocation);
+        HelloService helloService = ProxyFactory.getProxy(HelloService.class);
+        String result = helloService.sayHello("孙许好噻");
         System.out.println(result);
     }
 }
