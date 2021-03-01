@@ -1,6 +1,9 @@
 package com.sunxu.provider;
 
+import com.sunxu.framework.ProtocolFactory;
 import com.sunxu.framework.URL;
+import com.sunxu.framework.protocol.Protocol;
+import com.sunxu.framework.protocol.http.HttpProtocol;
 import com.sunxu.framework.protocol.http.HttpServer;
 import com.sunxu.framework.register.LocalRegister;
 import com.sunxu.framework.register.RemoteMapRegister;
@@ -22,7 +25,11 @@ public class Provider {
         URL url = new URL("localhost", Integer.valueOf(args[0]));
         RemoteMapRegister.register(HelloService.class.getName(), url);
 
-        HttpServer httpServer = new HttpServer();
-        httpServer.start(url.getHostName(), url.getPort());
+        // 启动tomcat/netty
+//        HttpServer httpServer = new HttpServer();
+//        httpServer.start(url.getHostName(), url.getPort());
+
+        Protocol protocol = ProtocolFactory.getProtocol();
+        protocol.start(url);
     }
 }

@@ -1,6 +1,8 @@
 package com.sunxu.framework;
 
+import com.sunxu.framework.protocol.Protocol;
 import com.sunxu.framework.protocol.http.HttpClient;
+import com.sunxu.framework.protocol.http.HttpProtocol;
 import com.sunxu.framework.register.RemoteMapRegister;
 import com.sunxu.provider.api.HelloService;
 
@@ -22,12 +24,19 @@ public class ProxyFactory {
                 (proxy, method, args) -> {
                     Invocation invocation = new Invocation(interfaceClass.getName(), method.getName(),
                             method.getParameterTypes(), args);
-                    HttpClient httpClient = new HttpClient();
-                    List<URL> urlList = RemoteMapRegister.get(interfaceClass.getName());
-                    // 负载均衡获取具体的节点
-                    URL url = LoadBalance.random(urlList);
-                    String result = httpClient.send(url.getHostName(), url.getPort(), invocation);
-                    return result;
+
+                    // mock数据代码
+                    try {
+                        Protocol protocol = ProtocolFactory.getProtocol();
+                        List<URL> urlList = RemoteMapRegister.get(interfaceClass.getName());
+                        // 负载均衡获取具体的节点
+                        URL url = LoadBalance.random(urlList);
+                        String result = protocol.send(url, invocation);
+                        return result;
+                    } catch (Exception e) {
+                        // 容错代码
+                        return "容错逻辑";
+                    }
                 });
     }
 }
