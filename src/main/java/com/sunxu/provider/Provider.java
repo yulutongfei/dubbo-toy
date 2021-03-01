@@ -1,7 +1,9 @@
 package com.sunxu.provider;
 
+import com.sunxu.framework.URL;
 import com.sunxu.framework.protocol.http.HttpServer;
 import com.sunxu.framework.register.LocalRegister;
+import com.sunxu.framework.register.RemoteMapRegister;
 import com.sunxu.provider.api.HelloService;
 import com.sunxu.provider.impl.HelloServiceImpl;
 
@@ -15,7 +17,12 @@ public class Provider {
     public static void main(String[] args) {
         // key也可以添加服务的版本号
         LocalRegister.register(HelloService.class.getName(), HelloServiceImpl.class);
+
+        // 注册中心注册
+        URL url = new URL("localhost", Integer.valueOf(args[0]));
+        RemoteMapRegister.register(HelloService.class.getName(), url);
+
         HttpServer httpServer = new HttpServer();
-        httpServer.start("localhost", 8080);
+        httpServer.start(url.getHostName(), url.getPort());
     }
 }

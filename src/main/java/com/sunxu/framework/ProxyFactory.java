@@ -1,11 +1,13 @@
 package com.sunxu.framework;
 
 import com.sunxu.framework.protocol.http.HttpClient;
+import com.sunxu.framework.register.RemoteMapRegister;
 import com.sunxu.provider.api.HelloService;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.List;
 
 /**
  * @author 孙许
@@ -21,7 +23,10 @@ public class ProxyFactory {
                     Invocation invocation = new Invocation(interfaceClass.getName(), method.getName(),
                             method.getParameterTypes(), args);
                     HttpClient httpClient = new HttpClient();
-                    String result = httpClient.send("localhost", 8080, invocation);
+                    List<URL> urlList = RemoteMapRegister.get(interfaceClass.getName());
+                    // 负载均衡获取具体的节点
+                    URL url = LoadBalance.random(urlList);
+                    String result = httpClient.send(url.getHostName(), url.getPort(), invocation);
                     return result;
                 });
     }
